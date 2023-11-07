@@ -1,6 +1,26 @@
 import pyrebase
 import requests
 import json
+'''
+Firebase file functions
+
+ processHttpError(e): Process HTTP error. Returns None.
+
+ authenticate_user(user): Authenticate user with email and password. 
+ Returns True if authentication is successful, False otherwise.
+
+ signup(): Sign up a new user. 
+ Returns user's authentication token and other details.
+
+ signin(): Sign in an existing user. 
+ Returns user's authentication token and other details.
+
+ emailVerified(user): Check if user's email is verified. 
+ Returns True if email is verified, False otherwise.
+
+ setUsername(user, name): Add user's name to database. Returns None.
+'''
+ 
 
 firebaseConfig = {
   "apiKey": "AIzaSyCRKlOgiKat20IdHzolR012qFffMek9vKU",
