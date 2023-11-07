@@ -1,4 +1,4 @@
-import pyrebase
+import pyrebase # pip install pyrebase4
 import requests
 import json
 '''
@@ -134,10 +134,18 @@ def setUsername(user, name):
     try:
         data = {"name": name}
         database.child("users").child(user['localId']).set(data, user['idToken'])
-    except requests.HTTPError as e:
-        return processHttpError(e)
+    except Exception as e:
+        print("Database Error", e)
 
-
+def updateUsername(user, name):
+    """
+    Update user's name to database.
+    """
+    try:
+        data = {"name": name}
+        database.child("users").child(user['localId']).update(data, user['idToken'])
+    except Exception as e:
+        print("Database Error", e)
 
 def main():
     """
