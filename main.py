@@ -1,5 +1,6 @@
 import pyrebase # pip install pyrebase4
 import requests
+import re
 import json
 '''
 Firebase file functions
@@ -19,6 +20,8 @@ Firebase file functions
  Returns True if email is verified, False otherwise.
 
  setUsername(user, name): Add user's name to database. Returns None.
+
+ updateUsername(user, name): Update user's name to database. Returns None.
 '''
  
 
@@ -81,6 +84,12 @@ def signup():
     """
     try:
         email = input("Enter your email: ")
+
+        # Check if email ends with @gmu.edu
+        if not re.match(r"[^@]+@gmu\.edu", email):
+            print("Please use a GMU email address.")
+            return None
+        
         password = input("Enter your password: ")      
         user = auth.create_user_with_email_and_password(email, password)
         print("Signup successful, verify your email to use app.")
@@ -129,10 +138,11 @@ def emailVerified(user):
 
 def setUsername(user, name):
     """
-    Add user's name to database.
+    Add user's name to database for the first time.
     """
     try:
-        data = {"name": name}
+        email = auth.get_account_info(user['idToken'])['users'][0]['email']
+        data = {"name": name, "email": email}
         database.child("users").child(user['localId']).set(data, user['idToken'])
     except Exception as e:
         print("Database Error", e)
