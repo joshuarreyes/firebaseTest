@@ -5,7 +5,7 @@ import json
 firebaseConfig = {
   "apiKey": "AIzaSyCRKlOgiKat20IdHzolR012qFffMek9vKU",
   "authDomain": "fir-2fb72.firebaseapp.com",
-  "databaseURL": "https://fir-2fb72.firebaseio.com",
+  "databaseURL": "https://fir-2fb72-default-rtdb.firebaseio.com",
   "projectId": "fir-2fb72",
   "storageBucket": "fir-2fb72.appspot.com",
   "messagingSenderId": "385173182800",
@@ -16,6 +16,7 @@ firebaseConfig = {
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
+database = firebase.database()
 
 def processHttpError(e):
     """
@@ -46,8 +47,8 @@ def authenticate_user(user):
     try:
         auth.send_email_verification(user['idToken'])
         return True
-    except Exception as e:
-        print("Authentication failed")
+    except requests.HTTPError as e:
+        processHttpError(e)
         return False
 
 def signup():
@@ -56,6 +57,7 @@ def signup():
 
     Returns:
         dict: User's authentication token and other details.
+        None: If signup fails.
     """
     try:
         email = input("Enter your email: ")
@@ -73,6 +75,7 @@ def signin():
 
     Returns:
         dict: User's authentication token and other details.
+        None: If signin fails.
     """
     try:
         email = input("Enter your email: ")
@@ -102,7 +105,20 @@ def emailVerified(user):
             return False
     except requests.HTTPError as e:
         return processHttpError(e)
-    
+
+
+def setUsername(user, name):
+    """
+    Add user's name to database.
+    """
+    try:
+        data = {"name": name}
+        database.child("users").child(user['localId']).set(data, user['idToken'])
+    except requests.HTTPError as e:
+        return processHttpError(e)
+
+
+
 def main():
     """
     Main function.
@@ -124,6 +140,8 @@ def main():
 
             if emailVerified(user):
                 print("Email verified!")
+                setUsername(user, input("Enter your username: "))
+                print("Username added to database!")
             else:
                 print("Email not verified!")
                 user = None
@@ -131,6 +149,7 @@ def main():
             running = False
         else:
             print("Invalid choice!")
+
 
 
 if __name__ == "__main__":
